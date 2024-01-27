@@ -1,0 +1,92 @@
+<%- include("./partials/head") %>
+
+<div class="container">
+    <div class="inner-container">
+        <h1>Todo App</h1>
+        <div class="form-box">
+            <form class="form-flex" action="/add/todo" method="POST" onsubmit="return validateForm()">
+                <div class="input-box">
+                    <input type="text" name="title" id="inputTitle" placeholder="Enter Todo Title">
+                    <span id="inputError" class="error"></span>
+                </div>
+                <div class="input-box">
+                    <textarea name="description" placeholder="Enter Todo Description"></textarea>
+                </div>
+                <div class="input-box">
+                    <input type="date" name="dueDate">
+                </div>
+                <button type="submit">Add Todo</button>
+            </form>
+        </div>
+        
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Due Date</th>
+                    <th>Message</th> 
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% todo.forEach(todos => { %>
+                    <tr>
+                        <td><%= todos.title %></td>
+                        <td><%= todos.description ? todos.description : '--empty--' %></td>
+                        <td><%= todos.dueDate ? todos.dueDate.toISOString().split('T')[0] : '' %></td>
+                        <td>
+                            <%
+                                function getMessage(dueDate) {
+                                    if (!dueDate) {
+                                        return "No due date";
+                                    }
+
+                                    const currentDate = new Date();
+                                    const dueDateObj = new Date(dueDate);
+
+                                    if (dueDateObj > currentDate) {
+                                        const timeDiff = dueDateObj - currentDate;
+                                        const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+                                        if (daysDiff <= 1) {
+                                            return "Due date close";
+                                        } else if (daysDiff === 2) {
+                                            return "Due date far";
+                                        } else {
+                                            return "Due date far";
+                                        }
+                                    } else if (dueDateObj.toDateString() === currentDate.toDateString()) {
+                                        return "Due date today";
+                                    } else {
+                                        return "Due date passed";
+                                    }
+                                }
+                            %>
+                            <%= getMessage(todos.dueDate) %>
+                        </td> 
+                        <td class="action-btns">
+                            <a class="inline-block delete" href="/delete/todo/<%= todos._id %>">Delete</a>
+                            <a class="inline-block edit" href="/edit/todo/<%= todos._id %>">Edit</a>
+
+                            <% if (!todos.completed) { %>
+                                <form class="inline-block" action="/update/todo/<%= todos._id %>" method="POST" class="markAsDoneForm">
+                                    <button type="submit" class="complete-btn">Mark as completed</button>
+                                    <input type="hidden" name="completed" value="true">
+                                </form>
+                            <% } else { %>
+                                <button class="inline-block" disabled>completed</button>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+
+
+
+<%- include("./partials/foot") %>

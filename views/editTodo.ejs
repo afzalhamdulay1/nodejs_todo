@@ -1,0 +1,27 @@
+<%- include("./partials/head") %>
+
+<div class="container">
+    <h1>Edit Todo</h1>
+    <div class="form-box">
+        <form class="form-flex" action="/edit/todo/<%= todo._id %>" method="POST" onsubmit="return validateForm()">
+            <div class="input-box">
+                <input type="text" name="title" id="inputTitle" value="<%= todo.title %>" placeholder="Edit Todo Title">
+                <span id="inputError" class="error"></span>
+            </div>
+            
+            <textarea name="description" placeholder="Edit Todo Description"><%= todo.description %></textarea>
+            <input type="date" name="dueDate" value="<%= todo.dueDate ? todo.dueDate.toISOString().split('T')[0] : '' %>">
+            <button type="submit">Update Todo</button>
+        </form>
+    </div>
+
+    <a href="/" class="mt-30">Cancel</a>
+
+    <% if (message) { %>
+        <p><%= message %></p>
+        <a href="/">Go to Home Page</a>
+    <% } %>
+</div>
+
+
+<%- include("./partials/foot") %>
